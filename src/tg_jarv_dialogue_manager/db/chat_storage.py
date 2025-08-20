@@ -24,6 +24,7 @@ class ChatStorage:
           created_at DateTime DEFAULT now()
         ) ENGINE = MergeTree
         ORDER BY (tg_id, bot_name, seq_in_dialogue)
+        TTL created_at + INTERVAL 14 DAY;
         """
         await self.ch.execute(sql)
         self._schema_ensured = True
