@@ -19,7 +19,6 @@ class JarvDialogueManager:
         clickhouse_user: Optional[str] = None,
         clickhouse_password: Optional[str] = None,
         table: str = "dialogue_history",
-        system_prompt: Optional[str] = None,
         pairs_limit: int = 10,
         char_soft_limit: int = 8000,
         payload_base: Optional[Dict[str, Any]] = None,
@@ -27,7 +26,6 @@ class JarvDialogueManager:
         self.bot_name = bot_name
         self.model = model
         self.user_id = user_id
-        self.system_prompt = system_prompt
         self.pairs_limit = pairs_limit
         self.char_soft_limit = char_soft_limit
         self.payload_base = payload_base or {}
@@ -36,23 +34,16 @@ class JarvDialogueManager:
         self._storage = ChatStorage(self._ch, table=table, auto_create=True)
 
     def _parse_response(self, resp: Dict[str, Any]) -> str:
-        if "answer" in resp and isinstance(resp["answer"], str):
-            return resp["answer"]
-        if "content" in resp and isinstance(resp["content"], str):
-            return resp["content"]
-        if "choices" in resp and resp["choices"] and "message" in resp["choices"][0] and "content" in resp["choices"][0]["message"]:
-            return str(resp["choices"][0]["message"]["content"])
-        return str(resp)
+        if "response" in resp and "text" in resp["response"]:
+            return resp["response"]["text"]
+        return ""
 
     def _make_payload(self, history: List[Dict[str, str]]) -> Dict[str, Any]:
-        payload = dict(self.payload_base)
+        payload = self.payload_base
         payload["model"] = self.model
-        payload["user"] = self.user_id
-        messages: List[Dict[str, str]] = []
-        if self.system_prompt:
-            messages.append({"role": "system", "content": self.system_prompt})
-        messages += history
-        payload["messages"] = messages
+        payload["user_id"] = self.user_id
+        if history:
+            payload["messages"] = history
         return payload
 
     async def build_history(self, tg_id: int) -> List[Dict[str, str]]:
