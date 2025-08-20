@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tg-jarv-dialogue-manager"
+version = "0.1.2"
+description = "Jarv AI клиент и диалог-менеджер для Telegram с хранением истории в ClickHouse"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+  { name = "Александр Гаганов" }
+]
+keywords = ["jarv", "telegram", "clickhouse", "dialogue", "chat", "asyncio", "httpx"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed"
+]
+dependencies = [
+  "httpx>=0.24,<1.0"
+]
+
+[project.optional-dependencies]
+telegram = ["python-telegram-bot>=21"]
+
+[project.urls]
+Homepage = "https://pypi.org/project/tg-jarv-dialogue-manager/"
+Repository = "https://github.com/GaganovAlexander/tg-jarv-dialogue-manager"
+Issues = "https://github.com/GaganovAlexander/tg-jarv-dialogue-manager/issues"
+
+[tool.setuptools.package-data]
+"tg_jarv_dialogue_manager" = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
