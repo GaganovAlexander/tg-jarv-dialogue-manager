@@ -1,26 +1,26 @@
-# tg-jarv-dialog-manager
+# tg-jarv-dialogue-manager
 
 Асинхронный клиент Jarv AI и диалог-менеджер с хранением истории в ClickHouse.
 
 ## Установка
 
 ```bash
-pip install tg-jarv-dialog-manager
+pip install tg-jarv-dialogue-manager
 ```
 
 Опционально для Telegram:
 ```bash
-pip install tg-jarv-dialog-manager[telegram]
+pip install tg-jarv-dialogue-manager[telegram]
 ```
 
 ## Быстрый старт
 
 ```python
 import asyncio
-from tg_jarv_dialog_manager import JarvDialogManager
+from tg_jarv_dialogue_manager import JarvdialogueManager
 
 async def main():
-    dm = JarvDialogManager(
+    dm = JarvdialogueManager(
         bot_name="DiscountBot",
         model="gpt-4o-mini",
         user_id="bot@synergetic",
@@ -30,7 +30,7 @@ async def main():
         clickhouse_database="jarv",
         clickhouse_user=None,
         clickhouse_password=None,
-        table="dialog_history",
+        table="dialogue_history",
         system_prompt="Ты — дружелюбный помощник.",
         pairs_limit=10,
         char_soft_limit=8000,
@@ -46,15 +46,15 @@ asyncio.run(main())
 ## Схема ClickHouse по умолчанию
 
 ```sql
-CREATE TABLE IF NOT EXISTS dialog_history (
+CREATE TABLE IF NOT EXISTS dialogue_history (
   tg_id UInt64,
   bot_name String,
-  seq_in_dialog UInt32,
+  seq_in_dialogue UInt32,
   role LowCardinality(String),
   content String,
   created_at DateTime DEFAULT now()
 ) ENGINE = MergeTree
-ORDER BY (tg_id, bot_name, seq_in_dialog);
+ORDER BY (tg_id, bot_name, seq_in_dialogue);
 ```
 
 ## Поддержка
