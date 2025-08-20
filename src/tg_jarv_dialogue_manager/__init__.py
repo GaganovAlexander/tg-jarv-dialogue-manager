@@ -1,3 +1,3 @@
-from .services.jarv_dialog import JarvDialogManager
-__all__ = ["JarvDialogManager"]
+from .services.jarv_dialogue import JarvDialogueManager
+__all__ = ["JarvDialogueManager"]
 __version__ = "0.1.2"

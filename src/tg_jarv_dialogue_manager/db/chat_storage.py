@@ -18,12 +18,12 @@ class ChatStorage:
         CREATE TABLE IF NOT EXISTS {self.table} (
           tg_id UInt64,
           bot_name String,
-          seq_in_dialog UInt32,
+          seq_in_dialogue UInt32,
           role LowCardinality(String),
           content String,
           created_at DateTime DEFAULT now()
         ) ENGINE = MergeTree
-        ORDER BY (tg_id, bot_name, seq_in_dialog)
+        ORDER BY (tg_id, bot_name, seq_in_dialogue)
         """
         await self.ch.execute(sql)
         self._schema_ensured = True
@@ -31,7 +31,7 @@ class ChatStorage:
     async def next_seq(self, tg_id: int) -> int:
         await self.ensure_schema()
         rows = await self.ch.select(f"""
-            SELECT max(seq_in_dialog) AS mx
+            SELECT max(seq_in_dialogue) AS mx
             FROM {self.table}
             WHERE tg_id = {tg_id}
         """)
@@ -43,9 +43,9 @@ class ChatStorage:
         await self.ensure_schema()
         values = []
         for r in rows:
-            values.append(f"({r['tg_id']}, {lit(r['bot_name'])}, {r['seq_in_dialog']}, {lit(r['role'])}, {lit(r['content'])})")
+            values.append(f"({r['tg_id']}, {lit(r['bot_name'])}, {r['seq_in_dialogue']}, {lit(r['role'])}, {lit(r['content'])})")
         sql = f"""
-        INSERT INTO {self.table} (tg_id, bot_name, seq_in_dialog, role, content)
+        INSERT INTO {self.table} (tg_id, bot_name, seq_in_dialogue, role, content)
         VALUES {', '.join(values)}
         """
         await self.ch.execute(sql)
@@ -56,7 +56,7 @@ class ChatStorage:
             SELECT role, content
             FROM {self.table}
             WHERE tg_id = {tg_id}
-            ORDER BY seq_in_dialog DESC
+            ORDER BY seq_in_dialogue DESC
             LIMIT {pairs_limit * 2}
         """)
         rows = list(reversed(rows))

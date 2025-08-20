@@ -5,7 +5,7 @@ from ..db.chat_storage import ChatStorage
 from ..db.clickhouse_client import ClickHouseClient
 
 
-class JarvDialogManager:
+class JarvDialogueManager:
     def __init__(
         self,
         *,
@@ -18,7 +18,7 @@ class JarvDialogManager:
         clickhouse_database: str,
         clickhouse_user: Optional[str] = None,
         clickhouse_password: Optional[str] = None,
-        table: str = "dialog_history",
+        table: str = "dialogue_history",
         system_prompt: Optional[str] = None,
         pairs_limit: int = 10,
         char_soft_limit: int = 8000,
@@ -67,8 +67,8 @@ class JarvDialogManager:
         resp = await self.jarv.chat(payload)
         response_text = self._parse_response(resp)
         await self._storage.append_messages([
-            {"tg_id": tg_id, "bot_name": self.bot_name, "seq_in_dialog": user_seq, "role": "user", "content": user_text},
-            {"tg_id": tg_id, "bot_name": self.bot_name, "seq_in_dialog": assistant_seq, "role": "assistant", "content": response_text},
+            {"tg_id": tg_id, "bot_name": self.bot_name, "seq_in_dialogue": user_seq, "role": "user", "content": user_text},
+            {"tg_id": tg_id, "bot_name": self.bot_name, "seq_in_dialogue": assistant_seq, "role": "assistant", "content": response_text},
         ])
         return response_text
 
