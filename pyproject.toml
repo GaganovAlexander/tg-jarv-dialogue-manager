@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tg-jarv-dialogue-manager"
-version = "0.1.7"
+version = "0.1.8"
 description = "Jarv AI клиент и диалог-менеджер для Telegram с хранением истории в ClickHouse"
 readme = "README.md"
 requires-python = ">=3.10"
