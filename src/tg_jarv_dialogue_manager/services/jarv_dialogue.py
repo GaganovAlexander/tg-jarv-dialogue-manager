@@ -48,10 +48,10 @@ class JarvDialogueManager:
         return payload
 
     async def build_history(self, tg_id: int) -> List[Dict[str, str]]:
-        return await self._storage.build_recent_history(tg_id, self.pairs_limit, self.char_soft_limit)
+        return await self._storage.build_recent_history(tg_id, self.bot_name, self.pairs_limit, self.char_soft_limit)
 
     async def ask(self, tg_id: int, user_text: str) -> str:
-        user_seq = await self._storage.next_seq(tg_id)
+        user_seq = await self._storage.next_seq(tg_id, self.bot_name)
         assistant_seq = user_seq + 1
         history = await self.build_history(tg_id)
         payload = self._make_payload(history)
