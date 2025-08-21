@@ -2,13 +2,13 @@ from typing import Iterable, List, Dict
 
 from .clickhouse_client import ClickHouseClient, lit
 
-
 class ChatStorage:
-    def __init__(self, ch: ClickHouseClient, table: str, auto_create: bool = True):
+    def __init__(self, ch: ClickHouseClient, table: str, ttl_days: int, auto_create: bool = True):
         self.ch = ch
         self.table = table
         self.auto_create = auto_create
         self._schema_ensured = False
+        self._ttl_days = ttl_days
 
     async def ensure_schema(self) -> None:
         if self._schema_ensured or not self.auto_create:
@@ -24,17 +24,17 @@ class ChatStorage:
           created_at DateTime DEFAULT now()
         ) ENGINE = MergeTree
         ORDER BY (tg_id, bot_name, seq_in_dialogue)
-        TTL created_at + INTERVAL 14 DAY;
+        TTL created_at + INTERVAL {self._ttl_days} DAY
         """
         await self.ch.execute(sql)
         self._schema_ensured = True
 
-    async def next_seq(self, tg_id: int) -> int:
+    async def next_seq(self, tg_id: int, bot_name: str) -> int:
         await self.ensure_schema()
         rows = await self.ch.select(f"""
             SELECT max(seq_in_dialogue) AS mx
             FROM {self.table}
-            WHERE tg_id = {tg_id}
+            WHERE tg_id = {tg_id} AND bot_name = {lit(bot_name)}
         """)
         if not rows or rows[0]["mx"] is None:
             return 1
@@ -51,12 +51,12 @@ class ChatStorage:
         """
         await self.ch.execute(sql)
 
-    async def build_recent_history(self, tg_id: int, pairs_limit: int, char_soft_limit: int) -> List[Dict[str, str]]:
+    async def build_recent_history(self, tg_id: int, bot_name: str, pairs_limit: int, char_soft_limit: int) -> List[Dict[str, str]]:
         await self.ensure_schema()
         rows = await self.ch.select(f"""
             SELECT role, content
             FROM {self.table}
-            WHERE tg_id = {tg_id}
+            WHERE tg_id = {tg_id} AND bot_name = {lit(bot_name)}
             ORDER BY seq_in_dialogue DESC
             LIMIT {pairs_limit * 2}
         """)

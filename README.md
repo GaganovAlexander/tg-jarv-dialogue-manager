@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS dialogue_history (
   content String,
   created_at DateTime DEFAULT now()
 ) ENGINE = MergeTree
-ORDER BY (tg_id, bot_name, seq_in_dialogue);
+ORDER BY (tg_id, bot_name, seq_in_dialogue)
+TTL created_at + INTERVAL 14 DAY;
 ```
 
 ## Поддержка

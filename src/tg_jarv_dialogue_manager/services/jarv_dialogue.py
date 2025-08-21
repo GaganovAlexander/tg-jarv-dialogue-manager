@@ -19,6 +19,7 @@ class JarvDialogueManager:
         clickhouse_user: Optional[str] = None,
         clickhouse_password: Optional[str] = None,
         table: str = "dialogue_history",
+        table_ttl_days: int = 14,
         pairs_limit: int = 10,
         char_soft_limit: int = 8000,
         payload_base: Optional[Dict[str, Any]] = None,
@@ -31,7 +32,7 @@ class JarvDialogueManager:
         self.payload_base = payload_base or {}
         self.jarv = JarvClient(api_key=jarv_api_key, endpoint=jarv_endpoint)
         self._ch = ClickHouseClient(url=clickhouse_url, database=clickhouse_database, user=clickhouse_user, password=clickhouse_password)
-        self._storage = ChatStorage(self._ch, table=table, auto_create=True)
+        self._storage = ChatStorage(self._ch, table=table, ttl_days=table_ttl_days, auto_create=True)
 
     def _parse_response(self, resp: Dict[str, Any]) -> str:
         if "response" in resp and "text" in resp["response"]:
